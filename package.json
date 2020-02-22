@@ -1,6 +1,6 @@
 {
   "name": "zh-tpl",
-  "version": "1.0.2",
+  "version": "1.1.1",
   "description": "创建统一模块模板",
   "main": "index.js",
   "keywords": [
@@ -16,9 +16,12 @@
     "tpl": "bin/tpl"
   },
   "scripts": {
+    "clean": "rimraf ./lib",
+    "prebuild": "npm run clean",
     "build": "babel src --out-dir lib",
     "eslint": "eslint --ext .js --ext .jsx ./src",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "prepublish": "npm run build"
   },
   "author": "linzehong",
   "license": "ISC",
@@ -39,6 +42,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.8.3",
     "chalk": "^3.0.0",
+    "rimraf": "^3.0.2",
     "yargs": "^15.1.0"
   },
   "prettier": {
