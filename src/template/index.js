@@ -6,25 +6,27 @@
 const { getNowFormatDate } = require('../utils');
 
 // index 内容
-function indexContent(string) {
+function indexContent(pageName, options) {
+  const { author } = options;
   const content = `/*
-* Author: lin.zehong 
+* Author: ${author}
 * Date: ${getNowFormatDate()} 
-* Desc: ${string} 入口 
+* Desc: ${pageName} 入口 
 */
 import dynamic from 'umi/dynamic';
 
 export default dynamic({
-  loader: () => import('./${string}'),
+  loader: () => import('./${pageName}'),
 });
 `;
   return content;
 }
 
 // MapProps 内容
-function mapPropsContent(desc, modelName) {
+function mapPropsContent(desc, modelName, options) {
+  const { author } = options;
   const content = `/*
-* Author: lin.zehong 
+* Author: ${author} 
 * Date: ${getNowFormatDate()}
 * Desc: ${desc} MapProps 
 */
@@ -52,18 +54,19 @@ export const mapDispatchToProps = dispatch => ({
 }
 
 // 入口组件内容
-function pContent(string) {
+function pContent(pageName, options) {
+  const { author } = options;
   const content = `/*
-* Author: lin.zehong 
+* Author: ${author} 
 * Date: ${getNowFormatDate()} 
 * Desc: 描述
 */
 import React from 'react';
 import { connect } from "dva";
 import { mapStateToProps, mapDispatchToProps } from "./MapProps";
-import styles from './${string}.less';
+import styles from './${pageName}.less';
 
-const ${string} = () => {
+const ${pageName} = () => {
   return (
     <div className={styles.root}>
       内容
@@ -71,7 +74,7 @@ const ${string} = () => {
   )
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(${string});
+export default connect(mapStateToProps, mapDispatchToProps)(${pageName});
 `;
   return content;
 }
@@ -88,9 +91,10 @@ function lessContent() {
 }
 
 // services 内容
-function servicesContent(string) {
+function servicesContent(string, options) {
+  const { author } = options;
   const content = `/*
-* Author: lin.zehong 
+* Author: ${author} 
 * Date: ${getNowFormatDate()} 
 * Desc: ${string} services 
 */
@@ -106,9 +110,10 @@ export const cityDataShow = param => get('/epidemic/cityDataShow', param);
 }
 
 // models 内容
-function modelsContent(fileName) {
+function modelsContent(fileName, options) {
+  const { author } = options;
   const content = `/*
-* Author: lin.zehong 
+* Author: ${author} 
 * Date: ${getNowFormatDate()} 
 * Desc: ${fileName} models 
 */

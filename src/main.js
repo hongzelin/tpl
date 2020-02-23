@@ -18,7 +18,7 @@ function Main(argv) {
   const { _: files } = argv;
   if (files.length > 0) {
     files.map(file => {
-      start(file);
+      start(file, argv);
       return null;
     })
   } else {
@@ -27,7 +27,7 @@ function Main(argv) {
   }
 }
 
-function start(file) {
+function start(file, argv) {
   if (file.length) {
 
     let root = "./";
@@ -54,17 +54,17 @@ function start(file) {
 
     // 创建文件，写入内容
     // index.js
-    writeFile(`${filePath}/index.js`, indexContent(pageName));
+    writeFile(`${filePath}/index.js`, indexContent(pageName, argv));
     // MapProps.js
-    writeFile(`${filePath}/MapProps.js`, mapPropsContent(pageName, file));
+    writeFile(`${filePath}/MapProps.js`, mapPropsContent(pageName, file, argv));
     // xxxPage.js
-    writeFile(`${filePath}/${pageName}.js`, pContent(pageName));
+    writeFile(`${filePath}/${pageName}.js`, pContent(pageName, argv));
     // xxxPage.less
-    writeFile(`${filePath}/${pageName}.less`, lessContent());
+    writeFile(`${filePath}/${pageName}.less`, lessContent(argv));
     // services
-    writeFile(`${filePath}/services/${file}.js`, servicesContent(file));
+    writeFile(`${filePath}/services/${file}.js`, servicesContent(file, argv));
     // models
-    writeFile(`${filePath}/models/${file}.js`, modelsContent(file), true);
+    writeFile(`${filePath}/models/${file}.js`, modelsContent(file, argv), true);
   }
 }
 
