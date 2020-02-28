@@ -12,6 +12,11 @@ const { argv } = require('yargs')
     default: "",
     describe: "作者",
   })
+  .option('t', {
+    alias: 'type',
+    default: "umi",
+    describe: "模板类型，目前支持 umi 和 taro 两种模板",
+  })
   .help();
 
 const Main = require("./main");

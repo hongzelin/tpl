@@ -3,158 +3,94 @@
  * Date: 2020-02-22 12:29:16 
  * Desc: 各种文件模板 
  */
-const { getNowFormatDate } = require('../utils');
+const {
+  indexContent: umiindexContent,
+  mapPropsContent: umimapPropsContent,
+  pContent: umipContent,
+  lessContent: umilessContent,
+  servicesContent: umiservicesContent,
+  modelsContent: umimodelsContent,
+} = require('./umiTpl');
+
+const {
+  indexContent: taroindexContent,
+  mapPropsContent: taromapPropsContent,
+  pContent: taropContent,
+  lessContent: tarolessContent,
+  servicesContent: taroservicesContent,
+  modelsContent: taromodelsContent,
+} = require('./taroTpl');
 
 // index 内容
 function indexContent(pageName, options) {
-  const { author } = options;
-  const content = `/*
-* Author: ${author}
-* Date: ${getNowFormatDate()} 
-* Desc: ${pageName} 入口 
-*/
-import dynamic from 'umi/dynamic';
-
-export default dynamic({
-  loader: () => import('./${pageName}'),
-});
-`;
-  return content;
+  const { type } = options;
+  if (type === 'umi') {
+    return umiindexContent(pageName, options);
+  } else if (type === 'taro') {
+    return taroindexContent(pageName, options);
+  } else {
+    return umiindexContent(pageName, options);
+  }
 }
 
 // MapProps 内容
 function mapPropsContent(desc, modelName, options) {
-  const { author } = options;
-  const content = `/*
-* Author: ${author} 
-* Date: ${getNowFormatDate()}
-* Desc: ${desc} MapProps 
-*/
-export const mapStateToProps = ({ ${modelName}, loading }) => ({
-  loading: loading.models.${modelName},
-  myData: ${modelName}.myData,
-});
-
-export const mapDispatchToProps = dispatch => ({
-  onDump(payload) {
-    dispatch({
-      type: '${modelName}/dump',
-      payload,
-    });
-  },
-  clearData(payload) {
-    dispatch({
-      type: '${modelName}/clearData',
-      payload,
-    });
-  },
-});
-`;
-  return content;
+  const { type } = options;
+  if (type === 'umi') {
+    return umimapPropsContent(desc, modelName, options);
+  } else if (type === 'taro') {
+    return taromapPropsContent(desc, modelName, options);
+  } else {
+    return umimapPropsContent(desc, modelName, options);
+  }
 }
 
 // 入口组件内容
 function pContent(pageName, options) {
-  const { author } = options;
-  const content = `/*
-* Author: ${author} 
-* Date: ${getNowFormatDate()} 
-* Desc: 描述
-*/
-import React from 'react';
-import { connect } from "dva";
-import { mapStateToProps, mapDispatchToProps } from "./MapProps";
-import styles from './${pageName}.less';
-
-const ${pageName} = () => {
-  return (
-    <div className={styles.root}>
-      内容
-    </div>
-  )
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(${pageName});
-`;
-  return content;
+  const { type } = options;
+  if (type === 'umi') {
+    return umipContent(pageName, options);
+  } else if (type === 'taro') {
+    return taropContent(pageName, options);
+  } else {
+    return umipContent(pageName, options);
+  }
 }
 
 // less 内容
-function lessContent() {
-  const content = `.root{
-  :global{
-
+function lessContent(options) {
+  const { type } = options;
+  if (type === 'umi') {
+    return umilessContent();
+  } else if (type === 'taro') {
+    return tarolessContent();
+  } else {
+    return umilessContent();
   }
-}
-`;
-  return content;
 }
 
 // services 内容
-function servicesContent(string, options) {
-  const { author } = options;
-  const content = `/*
-* Author: ${author} 
-* Date: ${getNowFormatDate()} 
-* Desc: ${string} services 
-*/
-import { get } from 'utils/request';
-
-/** 接口名称
-* @param {string} id -所属省份信息的id
-* @param {string} id -所属省份信息的id
-*/
-export const cityDataShow = param => get('/epidemic/cityDataShow', param);
-`;
-  return content;
+function servicesContent(desc, options) {
+  const { type } = options;
+  if (type === 'umi') {
+    return umiservicesContent(desc, options);
+  } else if (type === 'taro') {
+    return taroservicesContent(desc, options);
+  } else {
+    return umiservicesContent(desc, options);
+  }
 }
 
 // models 内容
 function modelsContent(fileName, options) {
-  const { author } = options;
-  const content = `/*
-* Author: ${author} 
-* Date: ${getNowFormatDate()} 
-* Desc: ${fileName} models 
-*/
-import * as ${fileName}Api from '../services/${fileName}.js';
-
-const initData = {
-  provinceData: [], // 疫情省份数据
-};
-
-export default {
-  namespace: '${fileName}',
-  state: {
-    ...initData,
-  },
-
-  effects: {
-    *cityDataShow({ payload }, { call, put }) {
-      const result = yield call(${fileName}Api.cityDataShow, payload);
-      const { errCode, data } = result;
-      if (errCode === 0) {
-        yield put({
-          type: 'dump',
-          payload: {
-            provinceData: data || [],
-          },
-        });
-      }
-      return result;
-    },
-  },
-  reducers: {
-    dump: (state, { payload }) => ({
-      ...state,
-      ...payload,
-    }),
-    clearData: () => ({ ...initData }),
-  },
-};
-
-`;
-  return content;
+  const { type } = options;
+  if (type === 'umi') {
+    return umimodelsContent(fileName, options);
+  } else if (type === 'taro') {
+    return taromodelsContent(fileName, options);
+  } else {
+    return umimodelsContent(fileName, options);
+  }
 }
 
 module.exports = {
