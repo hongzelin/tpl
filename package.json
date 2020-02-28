@@ -1,6 +1,6 @@
 {
   "name": "zh-tpl",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "创建统一模块模板",
   "main": "index.js",
   "keywords": [
