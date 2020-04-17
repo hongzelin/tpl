@@ -10,7 +10,7 @@ module.exports = {
     jasmine: true,
   },
   globals: {
-    IMAP: true,
+    // IMAP: true,
   },
   rules: {
     "generator-star-spacing": [0],

@@ -62,8 +62,8 @@ function pContent(pageName, options) {
 * Desc: 描述
 */
 import React from 'react';
-import { connect } from "dva";
-import { mapStateToProps, mapDispatchToProps } from "./MapProps";
+import { connect } from 'dva';
+import { mapStateToProps, mapDispatchToProps } from './MapProps';
 import styles from './${pageName}.less';
 
 const ${pageName} = () => {
@@ -98,7 +98,7 @@ function servicesContent(string, options) {
 * Date: ${getNowFormatDate()} 
 * Desc: ${string} services 
 */
-import { get } from 'utils/request';
+import { get } from 'utils/fetch';
 
 /** 接口名称
 * @param {string} id -所属信息的id
