@@ -22,9 +22,13 @@ function Main(argv) {
 
 function start(file, argv) {
   if (file.length) {
+    const { type } = argv;
 
+    // 公共组件和页面模板组件，路径不相同
     let root = "./";
-    if (isExisDir(conf.root)) {
+    if (type === 'fc' && isExisDir(conf.rootCompPath)) {
+      root = conf.rootCompPath || "./";
+    } else if (isExisDir(conf.root)) {
       root = conf.root || "./";
     }
 
@@ -36,6 +40,19 @@ function start(file, argv) {
       console.info(msg); // eslint-disable-line
       return;
     }
+
+    // 函数组件独立处理
+    if (type === 'fc') {
+      const fileName = capitalize(file);
+      const pageName = `${capitalize(file)}Page`;
+      const filePath = path.resolve(process.cwd(), root, fileName);
+      
+      // 创建目录
+      mkdirsSync(filePath);
+
+      writeFileByType(filePath, pageName, fileName, argv);
+      return;
+    } 
 
     const filePath = path.resolve(process.cwd(), root, file);
     const pageName = `${capitalize(file)}Page`;

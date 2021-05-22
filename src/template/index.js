@@ -33,6 +33,12 @@ const {
   modelsContent: taromodelsContent,
 } = require('./taroTpl');
 
+const {
+  indexContent: fcTsindexContent,
+  pContent: fcTspContent,
+  lessContent: fcTslessContent,
+} = require('./fcTsTpl');
+
 
 // 默认 umi 模板
 let indexContent = umiindexContent;
@@ -65,23 +71,42 @@ function writeFileByType(filePath, pageName, file, argv) {
     writeTsFile(filePath, pageName, file, argv);
     return;
   }
+
+  if (type === 'fc') {
+    indexContent = fcTsindexContent;
+    pContent = fcTspContent;
+    lessContent = fcTslessContent;
+    // umi ts 函数组件
+    writeFcTsFile(filePath, pageName, file, argv);
+    return;
+  }
   // umi 、 taro
   writeUmiOrTaroFile(filePath, pageName, file, argv);
 }
 
+function writeFcTsFile(filePath, pageName, fileName, argv) {
+  // 创建文件，写入内容
+  // index.ts
+  writeFile(`${filePath}/index.ts`, indexContent(fileName, argv));
+  // xxx.tsx
+  writeFile(`${filePath}/${fileName}.tsx`, pContent(fileName, argv));
+  // xxx.less
+  writeFile(`${filePath}/${fileName}.less`, lessContent(fileName));
+}
+
 function writeTsFile(filePath, pageName, file, argv) {
   // 创建文件，写入内容
-  // index.js
+  // index.ts
   writeFile(`${filePath}/index.ts`, indexContent(pageName, argv));
   // MapProps.js
   writeFile(`${filePath}/MapProps.js`, mapPropsContent(pageName, file, argv));
-  // xxxPage.js
+  // xxxPage.tsx
   writeFile(`${filePath}/${pageName}.tsx`, pContent(file, pageName, argv));
   // xxxPage.less
   writeFile(`${filePath}/${pageName}.less`, lessContent(argv));
-  // services
+  // services.ts
   writeFile(`${filePath}/services/${file}.ts`, servicesContent(file, argv));
-  // models
+  // models.tsx
   writeFile(`${filePath}/models/${file}.tsx`, modelsContent(file, argv), true);
 }
 
@@ -95,9 +120,9 @@ function writeUmiOrTaroFile(filePath, pageName, file, argv) {
   writeFile(`${filePath}/${pageName}.js`, pContent(pageName, argv));
   // xxxPage.less
   writeFile(`${filePath}/${pageName}.less`, lessContent(argv));
-  // services
+  // services.js
   writeFile(`${filePath}/services/${file}.js`, servicesContent(file, argv));
-  // models
+  // models.js
   writeFile(`${filePath}/models/${file}.js`, modelsContent(file, argv), true);
 }
 
