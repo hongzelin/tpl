@@ -2,15 +2,8 @@ const fs = require("fs");
 const path = require("path");
 const chalk = require('chalk');
 const conf = require("./config");
-const { capitalize } = require('./utils');
-const {
-  indexContent,
-  mapPropsContent,
-  pContent,
-  lessContent,
-  servicesContent,
-  modelsContent,
-} = require('./template');
+const { capitalize, smallLetters } = require('./utils');
+const { writeFileByType } = require('./template');
 
 const DIRS = ["models", "services", "components"];
 
@@ -46,25 +39,15 @@ function start(file, argv) {
 
     const filePath = path.resolve(process.cwd(), root, file);
     const pageName = `${capitalize(file)}Page`;
+    const fileName = smallLetters(file);
 
     // 创建目录
     DIRS.forEach(dirName => {
       mkdirsSync(`${filePath}/${dirName}`);
     });
 
-    // 创建文件，写入内容
-    // index.js
-    writeFile(`${filePath}/index.js`, indexContent(pageName, argv));
-    // MapProps.js
-    writeFile(`${filePath}/MapProps.js`, mapPropsContent(pageName, file, argv));
-    // xxxPage.js
-    writeFile(`${filePath}/${pageName}.js`, pContent(pageName, argv));
-    // xxxPage.less
-    writeFile(`${filePath}/${pageName}.less`, lessContent(argv));
-    // services
-    writeFile(`${filePath}/services/${file}.js`, servicesContent(file, argv));
-    // models
-    writeFile(`${filePath}/models/${file}.js`, modelsContent(file, argv), true);
+    writeFileByType(filePath, pageName, fileName, argv);
+
   }
 }
 
@@ -103,22 +86,6 @@ function mkdirsSync(dirname) {
     fs.mkdirSync(dirname);
     return true;
   }
-}
-
-// 创建文件
-function writeFile(filename, fileContent = '', flag = false) {
-  fs.writeFile(filename, fileContent, 'utf8', (error) => {
-    if (error) {
-      const err = chalk.red(error);
-      console.info(err); // eslint-disable-line
-      return false;
-    }
-    if (flag) {
-      const msg = chalk.green("模块创建成功！！！");
-      console.info(msg); // eslint-disable-line
-      return true;
-    }
-  })
 }
 
 module.exports = Main;

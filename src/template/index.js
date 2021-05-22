@@ -1,8 +1,11 @@
 /*
  * Author: lin.zehong 
  * Date: 2020-02-22 12:29:16 
- * Desc: 各种文件模板 
+ * Desc: 各种文件模板
  */
+const fs = require("fs");
+const chalk = require('chalk');
+
 const {
   indexContent: umiindexContent,
   mapPropsContent: umimapPropsContent,
@@ -13,6 +16,15 @@ const {
 } = require('./umiTpl');
 
 const {
+  indexContent: tsindexContent,
+  mapPropsContent: tsmapPropsContent,
+  pContent: tspContent,
+  lessContent: tslessContent,
+  servicesContent: tsservicesContent,
+  modelsContent: tsmodelsContent,
+} = require('./umiTsTpl');
+
+const {
   indexContent: taroindexContent,
   mapPropsContent: taromapPropsContent,
   pContent: taropContent,
@@ -21,83 +33,90 @@ const {
   modelsContent: taromodelsContent,
 } = require('./taroTpl');
 
-// index 内容
-function indexContent(pageName, options) {
-  const { type } = options;
-  if (type === 'umi') {
-    return umiindexContent(pageName, options);
-  } else if (type === 'taro') {
-    return taroindexContent(pageName, options);
-  } else {
-    return umiindexContent(pageName, options);
+
+// 默认 umi 模板
+let indexContent = umiindexContent;
+let mapPropsContent = umimapPropsContent;
+let pContent = umipContent;
+let lessContent = umilessContent;
+let servicesContent = umiservicesContent;
+let modelsContent = umimodelsContent;
+
+function writeFileByType(filePath, pageName, file, argv) {
+  const { type } = argv;
+
+  if (type === 'taro') {
+    indexContent = taroindexContent;
+    mapPropsContent = taromapPropsContent;
+    pContent = taropContent;
+    lessContent = tarolessContent;
+    servicesContent = taroservicesContent;
+    modelsContent = taromodelsContent;
   }
+
+  if (type === 'ts') {
+    indexContent = tsindexContent;
+    mapPropsContent = tsmapPropsContent;
+    pContent = tspContent;
+    lessContent = tslessContent;
+    servicesContent = tsservicesContent;
+    modelsContent = tsmodelsContent;
+    // umi 、 taro
+    writeTsFile(filePath, pageName, file, argv);
+    return;
+  }
+  // umi 、 taro
+  writeUmiOrTaroFile(filePath, pageName, file, argv);
 }
 
-// MapProps 内容
-function mapPropsContent(desc, modelName, options) {
-  const { type } = options;
-  if (type === 'umi') {
-    return umimapPropsContent(desc, modelName, options);
-  } else if (type === 'taro') {
-    return taromapPropsContent(desc, modelName, options);
-  } else {
-    return umimapPropsContent(desc, modelName, options);
-  }
+function writeTsFile(filePath, pageName, file, argv) {
+  // 创建文件，写入内容
+  // index.js
+  writeFile(`${filePath}/index.ts`, indexContent(pageName, argv));
+  // MapProps.js
+  writeFile(`${filePath}/MapProps.js`, mapPropsContent(pageName, file, argv));
+  // xxxPage.js
+  writeFile(`${filePath}/${pageName}.tsx`, pContent(file, pageName, argv));
+  // xxxPage.less
+  writeFile(`${filePath}/${pageName}.less`, lessContent(argv));
+  // services
+  writeFile(`${filePath}/services/${file}.ts`, servicesContent(file, argv));
+  // models
+  writeFile(`${filePath}/models/${file}.tsx`, modelsContent(file, argv), true);
 }
 
-// 入口组件内容
-function pContent(pageName, options) {
-  const { type } = options;
-  if (type === 'umi') {
-    return umipContent(pageName, options);
-  } else if (type === 'taro') {
-    return taropContent(pageName, options);
-  } else {
-    return umipContent(pageName, options);
-  }
+function writeUmiOrTaroFile(filePath, pageName, file, argv) {
+  // 创建文件，写入内容
+  // index.js
+  writeFile(`${filePath}/index.js`, indexContent(pageName, argv));
+  // MapProps.js
+  writeFile(`${filePath}/MapProps.js`, mapPropsContent(pageName, file, argv));
+  // xxxPage.js
+  writeFile(`${filePath}/${pageName}.js`, pContent(pageName, argv));
+  // xxxPage.less
+  writeFile(`${filePath}/${pageName}.less`, lessContent(argv));
+  // services
+  writeFile(`${filePath}/services/${file}.js`, servicesContent(file, argv));
+  // models
+  writeFile(`${filePath}/models/${file}.js`, modelsContent(file, argv), true);
 }
 
-// less 内容
-function lessContent(options) {
-  const { type } = options;
-  if (type === 'umi') {
-    return umilessContent();
-  } else if (type === 'taro') {
-    return tarolessContent();
-  } else {
-    return umilessContent();
-  }
-}
-
-// services 内容
-function servicesContent(desc, options) {
-  const { type } = options;
-  if (type === 'umi') {
-    return umiservicesContent(desc, options);
-  } else if (type === 'taro') {
-    return taroservicesContent(desc, options);
-  } else {
-    return umiservicesContent(desc, options);
-  }
-}
-
-// models 内容
-function modelsContent(fileName, options) {
-  const { type } = options;
-  if (type === 'umi') {
-    return umimodelsContent(fileName, options);
-  } else if (type === 'taro') {
-    return taromodelsContent(fileName, options);
-  } else {
-    return umimodelsContent(fileName, options);
-  }
+// 创建文件
+function writeFile(filename, fileContent = '', flag = false) {
+  fs.writeFile(filename, fileContent, 'utf8', (error) => {
+    if (error) {
+      const err = chalk.red(error);
+      console.info(err); // eslint-disable-line
+      return false;
+    }
+    if (flag) {
+      const msg = chalk.green("模块创建成功！！！");
+      console.info(msg); // eslint-disable-line
+      return true;
+    }
+  })
 }
 
 module.exports = {
-  indexContent,
-  mapPropsContent,
-  pContent,
-  lessContent,
-  servicesContent,
-  modelsContent,
+  writeFileByType,
 }

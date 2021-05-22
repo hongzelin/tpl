@@ -1,9 +1,40 @@
 // 首字母大写
+// function capitalize(string) {
+//   const words = string.split(' ');
+//   let i;
+//   for (i = 0; i < words.length; i += 1) {
+//     words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+//   }
+//   return words.join(' ');
+// }
+
+// 首字母大写, - 转化处理
 function capitalize(string) {
-  const words = string.split(' ');
+  let words = [];
+  if (string.indexOf('-') > -1){
+  	const wordsArr = string.split('-');
+    words = wordsArr.map(item => {
+      return capitalize(item);
+    })
+    return words.join('');
+  };
+  
+  words = string.split(' ');
   let i;
   for (i = 0; i < words.length; i += 1) {
     words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+  }
+  return words.join(' ');
+}
+
+// 首字母小写, - 转化处理
+function smallLetters(string) {
+  const _string = capitalize(string);
+  
+  const words = _string.split(' ');
+  let i;
+  for (i = 0; i < words.length; i += 1) {
+    words[i] = words[i].charAt(0).toLowerCase() + words[i].slice(1);
   }
   return words.join(' ');
 }
@@ -29,5 +60,6 @@ function getNowFormatDate() {
 
 module.exports = {
   capitalize,
+  smallLetters,
   getNowFormatDate,
 }
