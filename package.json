@@ -1,7 +1,7 @@
 {
   "name": "zh-tpl",
-  "version": "2.0.0",
-  "description": "创建统一模块模板",
+  "version": "2.1.0",
+  "description": "创建统一模块模板，支持模板有 umi js、umi ts、ts 函数组件、taro等",
   "main": "src/index.js",
   "keywords": [
     "zh-tpl",
